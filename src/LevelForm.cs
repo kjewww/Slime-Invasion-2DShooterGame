@@ -30,10 +30,6 @@ namespace ShooterGame2D
         System.Windows.Forms.Timer HealthTimer = new System.Windows.Forms.Timer();
 
         public List<Slime> slimes = new List<Slime>();
-        System.Windows.Forms.Timer GreenTimer = new System.Windows.Forms.Timer();
-        System.Windows.Forms.Timer BlackTimer = new System.Windows.Forms.Timer();
-        System.Windows.Forms.Timer RedTimer = new System.Windows.Forms.Timer();
-        System.Windows.Forms.Timer BlueTimer = new System.Windows.Forms.Timer();
 
         private System.Windows.Forms.Timer Timer = new System.Windows.Forms.Timer();
         HashSet<Keys> keysPressed = new HashSet<Keys>();
@@ -43,6 +39,7 @@ namespace ShooterGame2D
             InitializeComponent();
             EnemySpawner();
             ItemSpawner();
+            InitPlugins();
         }
 
         private void InitializeComponent()
@@ -253,60 +250,30 @@ namespace ShooterGame2D
             }
         }
 
+        private void InitPlugins()
+        {
+            SlimeFactory.Register(pos => new Red(pos));
+            SlimeFactory.Register(pos => new Blue(pos));
+            SlimeFactory.Register(pos => new Black(pos));
+        }
+
         private void EnemySpawner()
         {
-            // ijo
-            GreenTimer.Interval = 1000;
-            GreenTimer.Tick += (s, e) =>
+            SlimeFactory.Register(pos => new Green(pos));
+            var rand = new Random();
+            System.Windows.Forms.Timer slimeTimer = new System.Windows.Forms.Timer { Interval = 1500 };
+            slimeTimer.Tick += (s, e) =>
             {
-                var rand = new Random();
                 var spawnPos = new PointF(
                     rand.Next(0, this.ClientSize.Width - 30),
                     rand.Next(0, this.ClientSize.Height - 30)
                 );
-                slimes.Add(new Green(spawnPos));
+                var slime = SlimeFactory.CreateRandom(spawnPos);
+                if (slime != null) slimes.Add(slime);
             };
-            GreenTimer.Start();
-
-            // merah
-            RedTimer.Interval = 6000;
-            RedTimer.Tick += (s, e) =>
-            {
-                var rand = new Random();
-                var spawnPos = new PointF(
-                    rand.Next(0, this.ClientSize.Width - 30),
-                    rand.Next(0, this.ClientSize.Height - 30)
-                );
-                slimes.Add(new Red(spawnPos));
-            };
-            RedTimer.Start();
-
-            // biru
-            BlueTimer.Interval = 11000;
-            BlueTimer.Tick += (s, e) =>
-            {
-                var rand = new Random();
-                var spawnPos = new PointF(
-                    rand.Next(0, this.ClientSize.Width - 30),
-                    rand.Next(0, this.ClientSize.Height - 30)
-                );
-                slimes.Add(new Blue(spawnPos));
-            };
-            BlueTimer.Start();
-
-            // hitam
-            BlackTimer.Interval = 16000;
-            BlackTimer.Tick += (s, e) =>
-            {
-                var rand = new Random();
-                var spawnPos = new PointF(
-                    rand.Next(0, this.ClientSize.Width - 30),
-                    rand.Next(0, this.ClientSize.Height - 30)
-                );
-                slimes.Add(new Black(spawnPos));
-            };
-            BlackTimer.Start();
+            slimeTimer.Start();
         }
+
 
         public void ItemSpawner()
         {
@@ -359,19 +326,6 @@ namespace ShooterGame2D
             slimes.Clear();
             Bullets.Clear();
             items.Clear();
-
-            List<System.Windows.Forms.Timer> listTimer = new List<System.Windows.Forms.Timer>();
-            listTimer.Add(GreenTimer);
-            listTimer.Add(BlueTimer);
-            listTimer.Add(RedTimer);
-            listTimer.Add(BlackTimer);
-            listTimer.Add(HealthTimer);
-
-            foreach (System.Windows.Forms.Timer timer in listTimer)
-            {
-                timer.Stop();
-                timer.Start();
-            }
 
             ScoreCounter = 0;
             Score.Text = "Score: 0";

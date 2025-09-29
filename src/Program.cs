@@ -12,6 +12,8 @@ namespace ShooterGame2D
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new MainMenu());
+
         }
+
     }
 }
