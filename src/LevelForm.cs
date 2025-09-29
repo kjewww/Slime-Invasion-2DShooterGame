@@ -39,7 +39,7 @@ namespace ShooterGame2D
             InitializeComponent();
             EnemySpawner();
             ItemSpawner();
-            InitPlugins();
+            InitPlugins(true);
         }
 
         private void InitializeComponent()
@@ -250,11 +250,14 @@ namespace ShooterGame2D
             }
         }
 
-        private void InitPlugins()
+        private void InitPlugins(bool isActive)
         {
-            SlimeFactory.Register(pos => new Red(pos));
-            SlimeFactory.Register(pos => new Blue(pos));
-            SlimeFactory.Register(pos => new Black(pos));
+            if (isActive)
+            {
+                SlimeFactory.Register(pos => new Red(pos));
+                SlimeFactory.Register(pos => new Blue(pos));
+                SlimeFactory.Register(pos => new Black(pos));
+            }
         }
 
         private void EnemySpawner()
